@@ -12,7 +12,7 @@ def train():
 
     history = []
     plt.ion()
-    plt.figure(np.random.randint(1,10000))
+    plt.figure(np.random.randint(1, 10000))
 
     # gif_agent = GifAgent()
 
@@ -22,7 +22,7 @@ def train():
         episode_start_step = step
 
         observation = env.reset()
-        observation_with_previous_four_frames = np.zeros((210 * 160, 4))
+        observation_with_previous_four_frames = np.zeros((160 * 160, 4))
 
         tot_score_in_episode = 0
         while True:
@@ -41,7 +41,7 @@ def train():
             old_obs = observation_with_previous_four_frames.copy()
             for i in range(3):
                 observation_with_previous_four_frames[:, 3-i] = observation_with_previous_four_frames[:, 2-i]
-            observation_with_previous_four_frames[:, 0] = observation[:, :, 0].reshape(-1) / 255.0
+            observation_with_previous_four_frames[:, 0] = observation[:160, :, 0].reshape(-1) / 255.0
 
             if tot_score_in_episode > 0:
                 RL.store_transition(
@@ -86,14 +86,14 @@ if __name__ == '__main__':
     env = env.unwrapped
     RL = DeepQNetwork(
         n_actions=9,
-        n_features=210*160*4,
+        n_features=160*160*4,
         e_greedy_start=0.0,
         e_greedy_increment=1e-4,
-        e_greedy=0.90,
+        e_greedy=0.92,
         replace_target_iter=60,
         reward_decay=0.99,
-        memory_size=4500,  # require 10GiB of ram
-        batch_size=32,
+        memory_size=3000,  # require 6GiB of ram
+        batch_size=24,
         learning_rate=0.00025
     )
     try:
