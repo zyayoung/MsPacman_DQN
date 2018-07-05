@@ -126,7 +126,7 @@ class DeepQNetwork:
         model = Model(model_input, model_output)
         model.compile(RMSprop(self.lr), 'mse')
         # model.compile('adam', 'mse')
-        model.summary()
+        # model.summary()
         return model
 
     def _build_net(self):
