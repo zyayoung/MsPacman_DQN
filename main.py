@@ -1,6 +1,6 @@
 import gym,cv2
 import numpy as np
-from RL_noise import DeepQNetwork
+from RL import DeepQNetwork
 import matplotlib.pyplot as plt
 
 

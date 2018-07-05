@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from keras.models import Sequential, Model, load_model
-from keras.layers import Dense, Input, Lambda, Concatenate, Reshape, Conv2D, MaxPool2D, Activation, Flatten, GaussianNoise
+from keras.layers import Dense, Input, Lambda, Concatenate, Reshape, Conv2D, MaxPool2D, Activation, Flatten
 from keras import backend as K
 from keras.optimizers import RMSprop
 
