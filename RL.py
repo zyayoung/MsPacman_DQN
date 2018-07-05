@@ -100,7 +100,7 @@ class DeepQNetwork:
         # model.compile(RMSprop(self.lr), 'mse')
         # return model
         model_input = Input((self.n_features,))
-        shared_output = Reshape((160, 160, 4))(model_input)
+        shared_output = Reshape((210, 160, 4))(model_input)
         shared_output = Conv2D(32, (8, 8), padding='same', strides=4)(shared_output)
         # shared_output = MaxPool2D((2, 2))(shared_output)
         shared_output = Activation('relu')(shared_output)
