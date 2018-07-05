@@ -57,7 +57,6 @@ class DeepQNetwork:
     def choose_action(self, s):
         if np.random.uniform() < self.epsilon:
             predict = self.evaluate_net.predict(s[np.newaxis, :])[0]
-            #print(predict)
             action = predict.argmax()
         else:
             action = np.random.randint(self.n_actions)
@@ -67,7 +66,6 @@ class DeepQNetwork:
         if self.learn_step_counter % self.replace_target_iter == 0:
             self.target_net.set_weights(self.evaluate_net.get_weights())
             print("Target params replaced. epsilon:", self.epsilon)
-            # self.evaluate_net.set_weights(n())
 
         if self.memory_counter > self.memory_size:
             sample_index = np.random.choice(self.memory_size, size=self.batch_size)
@@ -102,7 +100,7 @@ class DeepQNetwork:
         # model.compile(RMSprop(self.lr), 'mse')
         # return model
         model_input = Input((self.n_features,))
-        shared_output = Reshape((210, 160, 12))(model_input)
+        shared_output = Reshape((160, 160, 4))(model_input)
         shared_output = Conv2D(32, (8, 8), padding='same', strides=4)(shared_output)
         # shared_output = MaxPool2D((2, 2))(shared_output)
         shared_output = Activation('relu')(shared_output)
@@ -115,7 +113,7 @@ class DeepQNetwork:
         shared_output = Flatten()(shared_output)
         # shared_output = Dense(1024, activation='elu')(shared_output)
         shared_output = Dense(512, activation='relu')(shared_output)
-        # shared_output = Dense(256, activation='relu')(shared_output)
+        shared_output = Dense(512, activation='relu')(shared_output)
         # shared_output = GaussianNoise(1)(shared_output)
         A = Dense(self.n_actions)(shared_output)
         V = Dense(1)(shared_output)

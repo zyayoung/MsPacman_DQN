@@ -1,4 +1,5 @@
-import gym,cv2,time
+import gym
+import time
 import numpy as np
 from RL import DeepQNetwork
 import matplotlib.pyplot as plt
@@ -7,13 +8,13 @@ from gifMaker import GifAgent
 
 def train():
     step = 0
-    avg_score = 550
+    avg_score = 70
 
     history = []
     plt.ion()
-    plt.figure()
+    plt.figure(np.random.randint(1,10000))
 
-    gif_agent = GifAgent()
+    # gif_agent = GifAgent()
 
     for episode in range(50000):
         # Performance statistic
@@ -21,10 +22,8 @@ def train():
         episode_start_step = step
 
         observation = env.reset()
-        gif_agent.store(observation)
-        observation_with_previous_four_frames = np.zeros((210 * 160 * 3, 4))
+        observation_with_previous_four_frames = np.zeros((210 * 160, 4))
 
-        observation_with_previous_four_frames[:, 0] = observation.reshape(-1) / 255.0
         tot_score_in_episode = 0
         while True:
             # Choose action
@@ -34,21 +33,27 @@ def train():
             reward = 0
             for _ in range(2):
                 observation, reward_, terminated, extra_info = env.step(action)
-                gif_agent.store(observation)
                 reward += reward_
+            # gif_agent.store(observation)
             tot_score_in_episode += reward
 
             # Store observation
             old_obs = observation_with_previous_four_frames.copy()
             for i in range(3):
                 observation_with_previous_four_frames[:, 3-i] = observation_with_previous_four_frames[:, 2-i]
-            observation_with_previous_four_frames[:, 0] = observation.reshape(-1) / 255.0
-            RL.store_transition(old_obs.reshape(-1), action, reward/10, observation_with_previous_four_frames.reshape(-1))
+            observation_with_previous_four_frames[:, 0] = observation[:, :, 0].reshape(-1) / 255.0
 
-            # Learn
-            if step > 2000 and step % 16 == 0:
-                RL.learn()
-                env.render()
+            if tot_score_in_episode > 0:
+                RL.store_transition(
+                    old_obs.reshape(-1),
+                    action, min(reward/10, 5),
+                    observation_with_previous_four_frames.reshape(-1)
+                )
+
+                # Learn
+                if step > 3000 and step % 4 == 0:
+                    RL.learn()
+                    # env.render()
 
             step += 1
 
@@ -62,14 +67,13 @@ def train():
                     '%.2f' % ((time.time()-episode_start_time)*1000.0 / (step-episode_start_step),),
                     'ms/step'
                 )
-                gif_agent.commit(tot_score_in_episode, auto_output=True)
-                if step > 2000 and episode % 10 == 0:
+                # gif_agent.commit(tot_score_in_episode, auto_output=True)
+                if step > 3000 and episode % 10 == 0:
                     history.append(avg_score)
                     plt.plot(history, c='blue')
                     plt.draw()
                     plt.pause(0.001)
                 break
-
 
         # Save model
         if episode % 125 == 0:
@@ -82,14 +86,14 @@ if __name__ == '__main__':
     env = env.unwrapped
     RL = DeepQNetwork(
         n_actions=9,
-        n_features=210*160*12,
-        e_greedy_start=0.85,
+        n_features=210*160*4,
+        e_greedy_start=0.0,
         e_greedy_increment=1e-4,
-        e_greedy=0.85,
+        e_greedy=0.90,
         replace_target_iter=60,
         reward_decay=0.99,
-        memory_size=int(3000),
-        batch_size=64,
+        memory_size=4500,  # require 10GiB of ram
+        batch_size=32,
         learning_rate=0.00025
     )
     try:

@@ -23,4 +23,4 @@ class GifAgent:
     def output(self, name='max_score.gif'):
         if 'gif' not in os.listdir(os.getcwd()):
             os.mkdir('./gif')
-        imageio.mimsave('./gif/'+name, self.max_storage, 'GIF', duration=0.03)
+        imageio.mimsave('./gif/'+name, self.max_storage, 'GIF', duration=0.05)
